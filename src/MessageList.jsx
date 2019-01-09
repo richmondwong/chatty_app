@@ -10,8 +10,8 @@ export class MessageList extends Component {
   render(){
     return (
       <main className="messages">
-        {this.props.messages.map((msg) =>
-          <Message username={msg.username} content={msg.content} />
+        {this.props.messages.map((msg, index) =>
+          <Message username={msg.username} key={index} content={msg.content} />
         )}
 
       </main>
