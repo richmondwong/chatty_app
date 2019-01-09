@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {ChatBar} from './Chatbar.jsx'
 import {MessageList} from './MessageList.jsx'
 
+
 class App extends Component {
 
   constructor(props){
@@ -28,17 +29,28 @@ class App extends Component {
     }
   }
 
+
   addMessage = content => {
     var originalMessages = this.state.messages;
-    // var originalUsers = this.state.messages.username;
+    var originalUsers = this.state.messages.username;
     var newMessages = [
       ...originalMessages,
       { username: "Placeholder", content, id: "tempID" }
     ];
     this.setState({ messages: newMessages });
+
+    var newestMessage = { username: "Placeholder", content, id: "tempID" }
+    this.socket.send(JSON.stringify(newestMessage))
   };
 
   componentDidMount() {
+
+    this.socket = new WebSocket('ws://localhost:3001')
+
+    this.socket.onopen = () => {
+      console.log('Connected to WebSocket')
+    }
+
     console.log("componentDidMount <App />");
     setTimeout(() => {
       console.log("Simulating incoming message");
@@ -49,6 +61,33 @@ class App extends Component {
       // Calling setState will trigger a call to render() in App and all child components.
       this.setState({messages: messages})
     }, 3000);
+
+
+  //    _sendContent = e => {
+  //   e.preventDefault();
+  //   const { content } = this.state;
+
+  //   const objectToSend = {
+  //     type: 'text-message',
+  //     content
+  //   };
+
+  //   this.socket.send(JSON.stringify(objectToSend));
+
+  //   this.setState({ content: '' });
+  // };
+
+
+    // this.socket.send("Hello")
+
+  //   wss.on('connection', function connection(ws) {
+  // ws.on('message', function incoming(message) {
+  //   console.log('received: %s', message);
+  // });
+
+  // ws.send('something');
+
+
   }
 
   render() {
