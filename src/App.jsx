@@ -8,7 +8,8 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      currentUser: {name: "Joe"},
+      // currentUser: {name: "Joe"},
+      currentUser: "",
       messages: []
       // messages: [
       // {
@@ -30,6 +31,10 @@ class App extends Component {
     }
   }
 
+  addUser = username => {
+    this.setState({currentUser: username})
+    console.log("This is currentUser in the addUser function: ", this.state.currentUser)
+  }
 
   addMessage = content => {
     // var originalMessages = this.state.messages;
@@ -41,7 +46,8 @@ class App extends Component {
     // this.setState({ messages: newMessages });
 
     // var newestMessage = { username: "Placeholder", content, id: "tempID" }
-    var newestMessage = { username: this.state.currentUser.name, content}
+    // var newestMessage = { username: this.state.currentUser.name, content}
+    var newestMessage = { username: this.state.currentUser, content}
     this.socket.send(JSON.stringify(newestMessage))
   };
 
@@ -84,7 +90,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <ChatBar currentUser={this.state.currentUser} addMessage={this.addMessage} />
+        <ChatBar currentUser={this.state.currentUser} addMessage={this.addMessage} addUser= {this.addUser} />
         <MessageList messages={this.state.messages} />
       </div>
     );

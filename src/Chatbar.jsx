@@ -6,10 +6,15 @@ export class ChatBar extends Component {
 
   constructor(props){
     super(props)
-    this.state = { message: "" }
+    this.state = { message: "",
+                   username: ""
+                 }
   }
 
-
+  onChange = e => {
+    const inputText = e.target.value
+    this.setState({message: inputText})
+  }
 
   onKeyUp = e => {
     if (e.keyCode === 13){
@@ -18,9 +23,16 @@ export class ChatBar extends Component {
     }
   }
 
-  onChange = e => {
-    const inputText = e.target.value
-    this.setState({message: inputText})
+  onChangeUser = e => {
+    const inputUsername = e.target.value
+    this.setState({username: inputUsername })
+  }
+
+  onKeyUpUser = e => {
+    if (e.keyCode === 13){
+      this.props.addUser(this.state.username)
+      this.setState({ username: "" })
+    }
   }
 
   render(){
@@ -29,7 +41,13 @@ export class ChatBar extends Component {
       <footer className="chatbar">
 
       {/*  <form onKeyUp={this.onKeyUp} >*/}
-          <input className="chatbar-username" placeholder="Your Name (Optional)" />
+          <input
+            className="chatbar-username"
+            placeholder="Your Name (Optional)"
+            value={this.state.username}
+            name="usernameInput"
+            onKeyUp={this.onKeyUpUser}
+            onChange={this.onChangeUser} />
           <input
             className="chatbar-message"
             value={this.state.message}
