@@ -32,8 +32,10 @@ class App extends Component {
   }
 
   addUser = username => {
+    // POST NOTIFICATION ///////////////
+    // console.log("This is the current User before setState:", this.state.currentUser)
     this.setState({currentUser: username})
-    console.log("This is currentUser in the addUser function: ", this.state.currentUser)
+    // console.log("This is currentUser in the addUser function after setState: ", this.state.currentUser)
   }
 
   addMessage = content => {
@@ -47,7 +49,9 @@ class App extends Component {
 
     // var newestMessage = { username: "Placeholder", content, id: "tempID" }
     // var newestMessage = { username: this.state.currentUser.name, content}
-    var newestMessage = { username: this.state.currentUser, content}
+
+    //POST MESSAGE ////////
+    var newestMessage = { username: this.state.currentUser, content, type: "postMessage"}
     this.socket.send(JSON.stringify(newestMessage))
   };
 
@@ -63,17 +67,32 @@ class App extends Component {
       console.log("Incoming server payload at app.js", payload);
       const json = JSON.parse(payload.data)
 
-      var originalMessages = this.state.messages;
-      // var originalUsers = this.state.messages.username;
-      var newMessages = [ ...originalMessages, json ];
-      this.setState({ messages: newMessages });
-      console.log(this.state.messages)
+// INCOMING MESSAGES //////
+    // var originalUsers = this.state.messages.username;
+
+
+      switch(json.type){
+        case "incomingMessage":
+        // handle incpoming message
+          var originalMessages = this.state.messages;
+          var newMessages = [ ...originalMessages, json ];
+          this.setState({ messages: newMessages });
+          // console.log(this.state.messages)
+          break;
+        case "incomingNotification":
+        //handle incoming notification
+          this.setState({messages: json})
+          break;
+        default:
+          throw new Error ("UInknown event type :", json.type)
+
+      }
 
     }
 
-    console.log("componentDidMount <App />");
+    // console.log("componentDidMount <App />");
     setTimeout(() => {
-      console.log("Simulating incoming message");
+      // console.log("Simulating incoming message");
       // Add a new message to the list of messages in the data store
       const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
       const messages = this.state.messages.concat(newMessage)
