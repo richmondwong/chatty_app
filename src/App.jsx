@@ -9,37 +9,39 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Joe"},
-      messages: [
-      {
-        username: "Mike",
-        content: "Hello hello",
-        id: "001"
-      },
-      {
-        username: "Mary",
-        content: "Whaddup whaddup",
-        id: "002"
-      },
-      {
-        username: "Pablo",
-        content: "hi there",
-        id: "003"
-      }
-      ]
+      messages: []
+      // messages: [
+      // {
+      //   username: "Mike",
+      //   content: "Hello hello",
+      //   id: "001"
+      // },
+      // {
+      //   username: "Mary",
+      //   content: "Whaddup whaddup",
+      //   id: "002"
+      // },
+      // {
+      //   username: "Pablo",
+      //   content: "hi there",
+      //   id: "003"
+      // }
+      // ]
     }
   }
 
 
   addMessage = content => {
-    var originalMessages = this.state.messages;
-    var originalUsers = this.state.messages.username;
-    var newMessages = [
-      ...originalMessages,
-      { username: "Placeholder", content, id: "tempID" }
-    ];
-    this.setState({ messages: newMessages });
+    // var originalMessages = this.state.messages;
+    // var originalUsers = this.state.messages.username;
+    // var newMessages = [
+    //   ...originalMessages,
+    //   { username: "Placeholder", content, id: "tempID" }
+    // ];
+    // this.setState({ messages: newMessages });
 
-    var newestMessage = { username: "Placeholder", content, id: "tempID" }
+    // var newestMessage = { username: "Placeholder", content, id: "tempID" }
+    var newestMessage = { username: this.state.currentUser.name, content}
     this.socket.send(JSON.stringify(newestMessage))
   };
 
@@ -49,6 +51,18 @@ class App extends Component {
 
     this.socket.onopen = () => {
       console.log('Connected to WebSocket')
+    }
+
+    this.socket.onmessage = payload => {
+      console.log("Incoming server payload at app.js", payload);
+      const json = JSON.parse(payload.data)
+
+      var originalMessages = this.state.messages;
+      // var originalUsers = this.state.messages.username;
+      var newMessages = [ ...originalMessages, json ];
+      this.setState({ messages: newMessages });
+      console.log(this.state.messages)
+
     }
 
     console.log("componentDidMount <App />");
@@ -61,33 +75,6 @@ class App extends Component {
       // Calling setState will trigger a call to render() in App and all child components.
       this.setState({messages: messages})
     }, 3000);
-
-
-  //    _sendContent = e => {
-  //   e.preventDefault();
-  //   const { content } = this.state;
-
-  //   const objectToSend = {
-  //     type: 'text-message',
-  //     content
-  //   };
-
-  //   this.socket.send(JSON.stringify(objectToSend));
-
-  //   this.setState({ content: '' });
-  // };
-
-
-    // this.socket.send("Hello")
-
-  //   wss.on('connection', function connection(ws) {
-  // ws.on('message', function incoming(message) {
-  //   console.log('received: %s', message);
-  // });
-
-  // ws.send('something');
-
-
   }
 
   render() {

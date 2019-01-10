@@ -1,5 +1,13 @@
+// const express = require('express');
+// const SocketServer = require('ws').Server;
+// const uuid = require('uuid/v4')
+
+
 const express = require('express');
-const SocketServer = require('ws').Server;
+const WebSocket = require('ws')
+const SocketServer = WebSocket.Server;
+// const SocketServer = require('ws').Server;
+const uuid = require('uuid/v4')
 
 // Set the port to 3001
 const PORT = 3001;
@@ -46,31 +54,21 @@ wss.on('connection', (ws) => {
 
  ws.on('message', data => {
     console.log(`Got message from the client ${data}`);
-    var convertedBack = JSON.parse(data)
-    console.log(`This is user ${convertedBack.id} sending message of ${convertedBack.content}`)
-    // const objData = JSON.parse(data);
+    var convertedBackToJSON = JSON.parse(data)
+    console.log(`This is user ${convertedBackToJSON.username} sending message of ${convertedBackToJSON.content}`)
 
-    // switch (objData.type) {
-    //   case 'text-message':
-    //     const objectToBroadcast = {
-    //       id: uuid(),
-    //       date: new Date(),
-    //       content: objData.content,
-    //       type: 'text-message'
-    //     };
-    //     messageDatabase.push(objectToBroadcast);
-    //     wss.broadcastJSON(objectToBroadcast);
-    //     break;
-    //   default:
-    // }
+    const objectToBroadcast = {
+      id: uuid(),
+      content: convertedBackToJSON.content,
+      username: convertedBackToJSON.username,
+      };
+
+    messageDatabase.push(objectToBroadcast);
+    wss.broadcastJSON(objectToBroadcast)
+
+    console.log("This is the array", messageDatabase)
+
   });
-
-  // const initialMessage = {
-  //   type: 'initial-messages',
-  //   messages: messageDatabase
-  // };
-  // ws.send(JSON.stringify(initialMessage));
-
 
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
