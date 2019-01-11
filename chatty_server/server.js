@@ -60,7 +60,6 @@ wss.on('connection', (ws) => {
 
     switch (convertedBackToJSON.type){
       case 'postMessage':
-        // INCOMING MESSAGE ///////
         const objectToBroadcast = {
           id: uuid(),
           content: convertedBackToJSON.content,
@@ -68,18 +67,24 @@ wss.on('connection', (ws) => {
           type: "incomingMessage"
           };
         messageDatabase.push(objectToBroadcast);
-        console.log("This is the array 1", messageDatabase)
         wss.broadcastJSON(objectToBroadcast)
         break;
+      case 'postNotification':
+        const objectToBroadcastTwo = {
+          content: convertedBackToJSON.content,
+          type: "incomingNotification"
+        }
+        messageDatabase.push(objectToBroadcastTwo)
+        wss.broadcastJSON(objectToBroadcastTwo)
+        console.log("This is OTB2: ", objectToBroadcastTwo)
+        break;
       default:
+        throw new Error ("Some error happened")
     }
-    console.log("This is the array 2", messageDatabase)
+    // console.log("This is the array 2", messageDatabase)
   });
 
-  const incomingNotification = {
-    type: "incomingNotification",
-    content: "User [A] has changed their name to User[B]"
-  }
+
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => console.log('Client disconnected'));
 

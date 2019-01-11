@@ -9,7 +9,7 @@ class App extends Component {
     super(props);
     this.state = {
       // currentUser: {name: "Joe"},
-      currentUser: "",
+      currentUser: "Annonymous",
       messages: []
       // messages: [
       // {
@@ -31,11 +31,16 @@ class App extends Component {
     }
   }
 
+  getCurrentState = () => {
+    this.setState((state) => ({
+      currentUser: state.currentUser
+    }));
+  }
+
   addUser = username => {
-    // POST NOTIFICATION ///////////////
-    // console.log("This is the current User before setState:", this.state.currentUser)
     this.setState({currentUser: username})
-    // console.log("This is currentUser in the addUser function after setState: ", this.state.currentUser)
+    var newUserNotification = {type: "postNotification", content: `${this.state.currentUser} has changed their name to ${username}`}
+    this.socket.send(JSON.stringify(newUserNotification))
   }
 
   addMessage = content => {
@@ -50,13 +55,11 @@ class App extends Component {
     // var newestMessage = { username: "Placeholder", content, id: "tempID" }
     // var newestMessage = { username: this.state.currentUser.name, content}
 
-    //POST MESSAGE ////////
     var newestMessage = { username: this.state.currentUser, content, type: "postMessage"}
     this.socket.send(JSON.stringify(newestMessage))
   };
 
   componentDidMount() {
-
     this.socket = new WebSocket('ws://localhost:3001')
 
     this.socket.onopen = () => {
@@ -81,10 +84,13 @@ class App extends Component {
           break;
         case "incomingNotification":
         //handle incoming notification
-          this.setState({messages: json})
+          var originalMessagesNotifications = this.state.messages;
+          var newMessagesNotifications = [...originalMessagesNotifications, json]
+          this.setState({messages: newMessagesNotifications })
+          console.log("incomingNotification happened")
           break;
         default:
-          throw new Error ("UInknown event type :", json.type)
+          throw new Error ("Unknown event type :", json.type)
 
       }
 
@@ -102,11 +108,10 @@ class App extends Component {
     }, 3000);
   }
 
-  render() {
-    // more code here..
-  }
 
   render() {
+
+    console.log("In render: ", this.state.currentUser)
     return (
       <div>
         <ChatBar currentUser={this.state.currentUser} addMessage={this.addMessage} addUser= {this.addUser} />

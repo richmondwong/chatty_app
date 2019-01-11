@@ -8,6 +8,7 @@ export class MessageList extends Component {
 
 
   render(){
+    console.log("This is props.messages: ", this.props.messages)
     return (
       <main className="messages">
         {this.props.messages.map((msg, index) =>
